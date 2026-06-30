@@ -402,22 +402,33 @@ export default function DataImporter({ onImport, onReset, currentCount }: DataIm
 
     setSheetsFetching(true);
     try {
-      const res = await fetch(`/api/sheets?sheetId=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(sheetsRange || "Sheet1")}`);
-      const json = await res.json();
-
+      // Use Google's Visualization API endpoint to fetch public sheets as CSV directly from the browser
+      // This bypasses the need for a backend server or API key, perfect for GitHub Pages!
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetsRange || "Sheet1")}`;
+      
+      const res = await fetch(csvUrl);
+      
       if (!res.ok) {
-        throw new Error(json.error || `Server returned ${res.status}`);
+        throw new Error(`Google Sheets returned HTTP ${res.status}. Ensure the sheet is set to 'Anyone with the link can view'.`);
       }
 
-      if (!json.headers || json.headers.length === 0) {
-        throw new Error("The sheet appears to be empty or has no header row.");
+      const text = await res.text();
+      
+      if (!text || text.trim().length === 0) {
+        throw new Error("The sheet appears to be empty or does not exist.");
+      }
+
+      if (text.includes("<html")) {
+         throw new Error("Google blocked the request. Please make sure the sheet is public ('Anyone with the link can view').");
       }
 
       // Clear any existing file data
       setFileDetails(null);
-      setHeaders(json.headers);
-      setParsedRows(json.rows);
-      setSheetsFetchSuccess(`✓ Loaded ${json.rows.length} rows from Google Sheets`);
+      
+      // Parse the CSV text using our existing lightweight parser
+      parseCSVText(text);
+      
+      setSheetsFetchSuccess(`✓ Loaded data successfully from Google Sheets`);
     } catch (err: any) {
       setError(err.message || "Failed to fetch from Google Sheets.");
     } finally {
