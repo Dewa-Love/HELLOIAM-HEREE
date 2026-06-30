@@ -1,0 +1,6 @@
+{
+  "name": "Loan Portfolio Master",
+  "description": "Comprehensive tracking, lifecycle visualization, and audit-ready worklist management system for Sanjay Kumar Pandey's loan portfolio (LU-GPH0020) at Gorakhpur.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
