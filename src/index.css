@@ -6,7 +6,99 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-/* Custom Scrollbar Styles for consistent modern aesthetics */
+/* ==========================================
+   MOBILE-FIRST OPTIMIZATIONS
+   ========================================== */
+
+/* Prevent iOS Safari zoom on input focus */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch-friendly tap targets — minimum 44px on mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Smooth momentum scrolling for iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text selection on interactive elements for better UX */
+button, nav, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Safe area insets for notched phones */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Mobile bottom nav bar */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #161b22;
+  border-top: 1px solid #30363d;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Mobile slide-over panel for customer detail */
+.mobile-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #0d1117;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Pull-to-close indicator */
+.drag-handle {
+  width: 36px;
+  height: 4px;
+  background: #30363d;
+  border-radius: 2px;
+  margin: 8px auto;
+}
+
+/* ==========================================
+   SCROLLBAR STYLES
+   ========================================== */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -34,4 +126,80 @@
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* ==========================================
+   MOBILE CARD IMPROVEMENTS
+   ========================================== */
+
+@media (max-width: 768px) {
+  /* Compact metrics cards */
+  .metric-card {
+    padding: 12px !important;
+  }
+
+  .metric-card .text-lg {
+    font-size: 14px !important;
+  }
+
+  /* Full-bleed sections on mobile */
+  .mobile-full-bleed {
+    margin-left: -16px;
+    margin-right: -16px;
+    border-radius: 0 !important;
+  }
+
+  /* Tighter customer list items */
+  .customer-list-item {
+    padding: 12px 16px !important;
+  }
+}
+
+/* ==========================================
+   MOBILE FILTER DRAWER
+   ========================================== */
+
+.filter-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 95;
+  background: #161b22;
+  border-top: 1px solid #30363d;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  max-height: 70vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease-out;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 94;
+  background: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ==========================================
+   RESPONSIVE TYPOGRAPHY
+   ========================================== */
+
+@media (max-width: 640px) {
+  h1 { font-size: 1rem !important; }
+  h2 { font-size: 1rem !important; }
+  h3 { font-size: 0.875rem !important; }
+}
+
+/* ==========================================
+   PERFORMANCE: Reduce animations for reduced-motion preference
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

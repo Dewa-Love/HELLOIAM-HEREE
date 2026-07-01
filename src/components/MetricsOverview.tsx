@@ -36,9 +36,9 @@ export default function MetricsOverview({ customers }: MetricsOverviewProps) {
   };
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 p-6 bg-[#0d1117]">
+    <div className="flex md:grid md:grid-cols-5 gap-3 md:gap-4 p-4 md:p-6 bg-[#0d1117] overflow-x-auto no-scrollbar snap-x snap-mandatory">
       {/* Sanctioned */}
-      <div className="bg-[#161b22] border border-[#30363d] p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
+      <div className="min-w-[140px] snap-start bg-[#161b22] border border-[#30363d] p-3 md:p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
         <div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#8b949e] uppercase font-bold tracking-wider font-mono">Approved Limit</span>
@@ -51,8 +51,7 @@ export default function MetricsOverview({ customers }: MetricsOverviewProps) {
         <span className="text-[10px] text-[#8b949e] mt-1.5 font-medium block">Total Net Sanction</span>
       </div>
 
-      {/* Disbursed */}
-      <div className="bg-[#161b22] border border-[#30363d] p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
+      <div className="min-w-[140px] snap-start bg-[#161b22] border border-[#30363d] p-3 md:p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
         <div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#8b949e] uppercase font-bold tracking-wider font-mono">Released Funds</span>
@@ -65,8 +64,7 @@ export default function MetricsOverview({ customers }: MetricsOverviewProps) {
         <span className="text-[10px] text-[#8b949e] mt-1.5 font-medium block">Capital Released</span>
       </div>
 
-      {/* Pending */}
-      <div className="bg-[#161b22] border border-[#30363d] p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
+      <div className="min-w-[140px] snap-start bg-[#161b22] border border-[#30363d] p-3 md:p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
         <div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#8b949e] uppercase font-bold tracking-wider font-mono">Locked Capital</span>
@@ -79,8 +77,7 @@ export default function MetricsOverview({ customers }: MetricsOverviewProps) {
         <span className="text-[10px] text-[#8b949e] mt-1.5 font-medium block">Awaiting disbursement</span>
       </div>
 
-      {/* Loan Accounts */}
-      <div className="bg-[#161b22] border border-[#30363d] p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
+      <div className="min-w-[140px] snap-start bg-[#161b22] border border-[#30363d] p-3 md:p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
         <div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#8b949e] uppercase font-bold tracking-wider font-mono">Active Accounts</span>
@@ -93,8 +90,7 @@ export default function MetricsOverview({ customers }: MetricsOverviewProps) {
         <span className="text-[10px] text-[#8b949e] mt-1.5 font-medium block">Loans in selection</span>
       </div>
 
-      {/* Tranches Logged */}
-      <div className="bg-[#161b22] border border-[#30363d] col-span-2 lg:col-span-1 p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
+      <div className="min-w-[140px] snap-start bg-[#161b22] border border-[#30363d] p-3 md:p-4 rounded-xl flex flex-col justify-between hover:border-[#8b949e] transition-all group">
         <div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#8b949e] uppercase font-bold tracking-wider font-mono">Tranche History</span>
