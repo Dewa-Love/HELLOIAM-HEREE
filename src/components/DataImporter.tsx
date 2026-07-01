@@ -27,19 +27,40 @@ interface DataImporterProps {
   currentCount: number;
 }
 
-// Default columns we expect
+// Default columns we expect — matches the loan portfolio data schema
 const FIELD_DEFINITIONS = [
-  { key: "name", label: "Customer Name", required: true, aliases: ["customer name", "name", "borrower", "client", "customer"] },
+  { key: "customer_name", label: "Customer Name", required: true, aliases: ["customer name", "name", "borrower", "client", "customer"] },
   { key: "occupation", label: "Occupation", required: false, aliases: ["occupation", "job", "profession", "work"] },
-  { key: "address", label: "Address", required: false, aliases: ["address", "location", "residence", "city"] },
-  { key: "loan_no", label: "Loan / App Number", required: true, aliases: ["loan no", "loan number", "loan_no", "app number", "app no", "application number", "account number", "account no"] },
-  { key: "scheme", label: "Loan Scheme", required: false, aliases: ["scheme", "loan scheme", "product"] },
-  { key: "sanction_date", label: "Sanction Date", required: false, aliases: ["sanction date", "date", "sanctioned date"] },
-  { key: "net_sanction_amt", label: "Sanctioned Amount", required: true, aliases: ["sanctioned amount", "sanction amount", "net sanction amt", "amount", "limit", "sanctioned limit", "total sanctioned", "gross sanction amt"] },
-  { key: "total_disbursed", label: "Total Disbursed", required: false, aliases: ["total disbursed", "disbursed amount", "payout", "disbursed", "disbursement amt"] },
-  { key: "roi", label: "Interest Rate (ROI %)", required: false, aliases: ["roi", "interest rate", "rate", "interest", "roi %"] },
-  { key: "status", label: "Loan Status", required: false, aliases: ["status", "loan status", "state", "overall status"] },
-  { key: "purpose", label: "Purpose", required: false, aliases: ["purpose", "use", "loan purpose"] }
+  { key: "regional_office", label: "Regional Office", required: false, aliases: ["regional office", "region", "ro"] },
+  { key: "back_office", label: "Back Office", required: false, aliases: ["back office", "bo", "cluster"] },
+  { key: "area_office", label: "Area Office", required: false, aliases: ["area office", "ao", "branch"] },
+  { key: "agent_name", label: "Agent Name", required: false, aliases: ["agent name", "agent", "dsa name", "connector"] },
+  { key: "agent_code", label: "Agent Code", required: false, aliases: ["agent code", "dsa code", "connector code"] },
+  { key: "customer_status", label: "Customer Status", required: false, aliases: ["customer status", "overall status", "cust status"] },
+  { key: "loan_no", label: "Loan No", required: true, aliases: ["loan no", "loan number", "loan_no", "loan #"] },
+  { key: "app_no", label: "App No", required: false, aliases: ["app no", "app number", "application number", "application no"] },
+  { key: "sanction_date", label: "Sanction Date", required: false, aliases: ["sanction date", "sanctioned date", "sanction dt"] },
+  { key: "loan_status", label: "Loan Status", required: false, aliases: ["loan status", "status", "state"] },
+  { key: "scheme", label: "Scheme", required: false, aliases: ["scheme", "loan scheme", "product", "product name"] },
+  { key: "purpose", label: "Purpose", required: false, aliases: ["purpose", "loan purpose", "use"] },
+  { key: "net_sanction_amt", label: "Net Sanction Amt", required: true, aliases: ["net sanction amt", "sanction amount", "sanctioned amount", "sanction amt", "total sanctioned"] },
+  { key: "roi", label: "ROI %", required: false, aliases: ["roi %", "roi", "interest rate", "rate", "interest"] },
+  { key: "interest_type", label: "Interest Type", required: false, aliases: ["interest type", "int type", "rate type"] },
+  { key: "loan_total_disbursed", label: "Loan Total Disbursed", required: false, aliases: ["loan total disbursed", "total disbursed", "disbursed amount", "disbursed"] },
+  { key: "loan_pending", label: "Loan Pending", required: false, aliases: ["loan pending", "pending", "total pending", "pending amount"] },
+  { key: "disb_date", label: "Disb Date", required: false, aliases: ["disb date", "disbursement date", "payout date"] },
+  { key: "disb_type", label: "Disb Type", required: false, aliases: ["disb type", "disbursement type", "payout type"] },
+  { key: "disb_amt", label: "Disb Amt", required: false, aliases: ["disb amt", "disbursement amount", "payout amount"] },
+  { key: "cancelled_amt", label: "Cancelled Amt", required: false, aliases: ["cancelled amt", "cancelled amount", "cancel amt"] },
+  { key: "net_disb_amt", label: "Net Disb Amt", required: false, aliases: ["net disb amt", "net disbursement", "net payout"] },
+  { key: "payment_type", label: "Payment Type", required: false, aliases: ["payment type", "pay type", "mode of payment"] },
+  { key: "cheque_no", label: "Cheque No", required: false, aliases: ["cheque no", "cheque number", "chq no"] },
+  { key: "beneficiary", label: "Beneficiary", required: false, aliases: ["beneficiary", "beneficiary name", "payee"] },
+  { key: "beneficiary_ac", label: "Beneficiary A/C", required: false, aliases: ["beneficiary a/c", "beneficiary ac", "account", "a/c no"] },
+  { key: "txn_ref", label: "Txn Ref", required: false, aliases: ["txn ref", "transaction ref", "txn reference", "utr"] },
+  { key: "realization", label: "Realization", required: false, aliases: ["realization", "realisation", "realized"] },
+  { key: "mandate_status", label: "Mandate Status", required: false, aliases: ["mandate status", "mandate", "nach status"] },
+  { key: "collateral_id", label: "Collateral ID", required: false, aliases: ["collateral id", "collateral", "security id"] },
 ];
 
 export default function DataImporter({ onImport, onReset, currentCount }: DataImporterProps) {
