@@ -13,7 +13,8 @@ import CustomerDetail from "./components/CustomerDetail";
 import WorklistManager from "./components/WorklistManager";
 import AIAnalyst from "./components/AIAnalyst";
 import DataImporter from "./components/DataImporter";
-import { FileSpreadsheet, Users, Cpu } from "lucide-react";
+import { FileSpreadsheet, Users, Cpu, Loader2 } from "lucide-react";
+import { fetchLiveCustomers } from "./utils/sheetFetcher";
 
 // Augment CUSTOMERS with realistic Gorakhpur localities for complete searchable profile records
 const GORAKHPUR_LOCALITIES = [
@@ -46,6 +47,28 @@ export default function App() {
     }
     return INITIAL_CUSTOMERS;
   });
+
+  const [isLiveLoading, setIsLiveLoading] = React.useState<boolean>(true);
+  const [liveLoadError, setLiveLoadError] = React.useState<string | null>(null);
+
+  // Auto-fetch live Google Sheets data on mount
+  React.useEffect(() => {
+    const loadLive = async () => {
+      try {
+        // Hardcoded sheet ID for auto-load as requested
+        const LIVE_SHEET_ID = "1T-y6-9bYe4dSgUGOMerjnqiEZbl_rj_NDS22koa4D7Q";
+        const liveCustomers = await fetchLiveCustomers(LIVE_SHEET_ID);
+        setCustomers(liveCustomers);
+        localStorage.setItem("gcp_imported_customers", JSON.stringify(liveCustomers));
+      } catch (err: any) {
+        console.error("Auto-fetch failed:", err);
+        setLiveLoadError(err.message || "Failed to load live data.");
+      } finally {
+        setIsLiveLoading(false);
+      }
+    };
+    loadLive();
+  }, []);
 
   const [showImporter, setShowImporter] = React.useState<boolean>(false);
   const [activeTab, setActiveTab] = React.useState<"customers" | "worklist" | "ai">("customers");
@@ -213,6 +236,7 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {isLiveLoading && <Loader2 className="w-4 h-4 text-[#8b949e] animate-spin" />}
           <button
             onClick={() => setShowImporter(!showImporter)}
             className={`p-2 rounded-lg border transition-all ${
@@ -345,8 +369,10 @@ export default function App() {
                 ))}
               </select>
 
-              <button
-                onClick={() => setShowImporter(!showImporter)}
+              <div className="flex items-center gap-3">
+                {isLiveLoading && <Loader2 className="w-4 h-4 text-[#8b949e] animate-spin" title="Auto-syncing live data..." />}
+                <button
+                  onClick={() => setShowImporter(!showImporter)}
                 className={`p-1.5 flex items-center gap-1.5 border rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   showImporter
                     ? "bg-[#f0a500]/10 border-[#f0a500] text-[#f0a500]"
@@ -365,6 +391,7 @@ export default function App() {
               >
                 <X className="w-4 h-4" />
               </button>
+              </div>
             </div>
           </div>
 
