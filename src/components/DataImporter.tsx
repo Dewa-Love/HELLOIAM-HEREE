@@ -115,21 +115,48 @@ export default function DataImporter({ onImport, onReset, currentCount }: DataIm
       const groupedCustomers: { [name: string]: Customer } = {};
 
       parsedRows.forEach((row, rowIndex) => {
-        // Extract fields based on current mapping
-        const nameVal = String(row[columnMapping["name"]] || "").trim();
+        // Extract fields based on current mapping — uses new schema keys
+        const nameVal = String(row[columnMapping["customer_name"]] || "").trim();
         if (!nameVal) return; // Skip rows without customer names
 
         const occupationVal = String(row[columnMapping["occupation"]] || "Business Owner").trim();
-        const addressVal = String(row[columnMapping["address"]] || "Gorakhpur, Uttar Pradesh").trim();
+        const regionalOfficeVal = String(row[columnMapping["regional_office"]] || "").trim();
+        const backOfficeVal = String(row[columnMapping["back_office"]] || "").trim();
+        const areaOfficeVal = String(row[columnMapping["area_office"]] || "").trim();
+        const agentNameVal = String(row[columnMapping["agent_name"]] || "Self / Direct").trim();
+        const agentCodeVal = String(row[columnMapping["agent_code"]] || "").trim();
+        const customerStatusVal = String(row[columnMapping["customer_status"]] || "").trim();
         const loanNoVal = String(row[columnMapping["loan_no"]] || `LN-${1000 + rowIndex}`).trim();
-        const schemeVal = String(row[columnMapping["scheme"]] || "General Business Loan").trim();
+        const appNoVal = String(row[columnMapping["app_no"]] || `AP-${loanNoVal.replace(/[^0-9]/g, "") || 10000 + rowIndex}`).trim();
         const sanctionDateVal = String(row[columnMapping["sanction_date"]] || "2026-01-15").trim();
-        const sanctionAmtVal = Math.max(0, parseFloat(String(row[columnMapping["net_sanction_amt"]] || "0").replace(/[^0-9.]/g, "")) || 0);
-        const disbursedVal = Math.max(0, parseFloat(String(row[columnMapping["total_disbursed"]] || "0").replace(/[^0-9.]/g, "")) || 0);
-        const roiVal = parseFloat(String(row[columnMapping["roi"]] || "8.5").replace(/[^0-9.]/g, "")) || 8.5;
+        const loanStatusVal = String(row[columnMapping["loan_status"]] || "").trim();
+        const schemeVal = String(row[columnMapping["scheme"]] || "General Business Loan").trim();
         const purposeVal = String(row[columnMapping["purpose"]] || "Capital Expansion").trim();
-        
-        let statusVal = String(row[columnMapping["status"]] || "").trim();
+        const sanctionAmtVal = Math.max(0, parseFloat(String(row[columnMapping["net_sanction_amt"]] || "0").replace(/[^0-9.]/g, "")) || 0);
+        const roiVal = parseFloat(String(row[columnMapping["roi"]] || "8.5").replace(/[^0-9.]/g, "")) || 8.5;
+        const interestTypeVal = String(row[columnMapping["interest_type"]] || "Reducing Balance").trim();
+        const loanDisbursedVal = Math.max(0, parseFloat(String(row[columnMapping["loan_total_disbursed"]] || "0").replace(/[^0-9.]/g, "")) || 0);
+        const loanPendingVal = Math.max(0, parseFloat(String(row[columnMapping["loan_pending"]] || "0").replace(/[^0-9.]/g, "")) || 0);
+        const disbDateVal = String(row[columnMapping["disb_date"]] || sanctionDateVal).trim();
+        const disbTypeVal = String(row[columnMapping["disb_type"]] || "First Tranche").trim();
+        const disbAmtVal = Math.max(0, parseFloat(String(row[columnMapping["disb_amt"]] || "0").replace(/[^0-9.]/g, "")) || 0);
+        const cancelledAmtVal = Math.max(0, parseFloat(String(row[columnMapping["cancelled_amt"]] || "0").replace(/[^0-9.]/g, "")) || 0);
+        const netDisbAmtVal = Math.max(0, parseFloat(String(row[columnMapping["net_disb_amt"]] || "0").replace(/[^0-9.]/g, "")) || 0);
+        const paymentTypeVal = String(row[columnMapping["payment_type"]] || "NEFT").trim();
+        const chequeNoVal = row[columnMapping["cheque_no"]] ? String(row[columnMapping["cheque_no"]]).trim() : null;
+        const beneficiaryVal = String(row[columnMapping["beneficiary"]] || nameVal).trim();
+        const beneficiaryAcVal = row[columnMapping["beneficiary_ac"]] ? String(row[columnMapping["beneficiary_ac"]]).trim() : null;
+        const txnRefVal = String(row[columnMapping["txn_ref"]] || `TXN-${loanNoVal}`).trim();
+        const realizationVal = String(row[columnMapping["realization"]] || "").trim();
+        const mandateStatusVal = String(row[columnMapping["mandate_status"]] || "Active").trim();
+        const collateralIdVal = row[columnMapping["collateral_id"]] ? String(row[columnMapping["collateral_id"]]).trim() : null;
+
+        // Compute effective disbursed and pending
+        const disbursedVal = loanDisbursedVal || disbAmtVal || netDisbAmtVal;
+        const pendingVal = loanPendingVal || Math.max(0, sanctionAmtVal - disbursedVal);
+
+        // Compute status if not provided
+        let statusVal = loanStatusVal || customerStatusVal;
         if (!statusVal) {
           if (disbursedVal === 0) {
             statusVal = "Stalled / Zero Payout";
@@ -140,52 +167,50 @@ export default function DataImporter({ onImport, onReset, currentCount }: DataIm
           }
         }
 
-        const pendingVal = Math.max(0, sanctionAmtVal - disbursedVal);
-
         // Build single Loan object
         const loanObj: Loan = {
           loan_no: loanNoVal,
-          app_no: `AP-${loanNoVal.replace(/[^0-9]/g, "") || 10000 + rowIndex}`,
+          app_no: appNoVal,
           year: parseInt(sanctionDateVal.split("-")[0]) || 2026,
           sanction_date: sanctionDateVal,
           status: statusVal,
           age_days: 15,
           loan_type: "Term Loan",
           gross_sanction_amt: sanctionAmtVal,
-          canc_amt: 0,
+          canc_amt: cancelledAmtVal,
           net_sanction_amt: sanctionAmtVal,
           roi: roiVal,
-          disbursement_amt: disbursedVal,
+          disbursement_amt: disbAmtVal || disbursedVal,
           total_disbursed: disbursedVal,
           pending: pendingVal,
           agent_type: "Direct",
           scheme: schemeVal,
           purpose: purposeVal,
           roi_package: `ROI-${roiVal}%`,
-          interest_type: "Reducing Balance",
+          interest_type: interestTypeVal,
           product_code: "PL-101",
           tranche_count: disbursedVal > 0 ? 1 : 0,
           has_txn_detail: disbursedVal > 0,
-          any_unrealized: false,
-          mandate_status: "Active",
-          collateral_id: null,
-          connector_name: null,
+          any_unrealized: realizationVal.toLowerCase().includes("unrealized"),
+          mandate_status: mandateStatusVal,
+          collateral_id: collateralIdVal,
+          connector_name: agentNameVal !== "Self / Direct" ? agentNameVal : null,
           disbursements: disbursedVal > 0 ? [
             {
-              date: sanctionDateVal,
-              disb_type: "First Tranche",
-              disb_amt: disbursedVal,
-              canc_amt: 0,
-              net_disb_amt: disbursedVal,
-              payment_type: "NEFT",
-              cheque_no: null,
-              beneficiary: nameVal,
-              beneficiary_ac: null,
-              txn_ref: `TXN-${loanNoVal}`,
-              realization: "Realized",
-              mandate_status: "Approved",
-              connector_name: null,
-              collateral_id: null
+              date: disbDateVal,
+              disb_type: disbTypeVal,
+              disb_amt: disbAmtVal || disbursedVal,
+              canc_amt: cancelledAmtVal,
+              net_disb_amt: netDisbAmtVal || disbursedVal,
+              payment_type: paymentTypeVal,
+              cheque_no: chequeNoVal,
+              beneficiary: beneficiaryVal,
+              beneficiary_ac: beneficiaryAcVal,
+              txn_ref: txnRefVal,
+              realization: realizationVal || "Realized",
+              mandate_status: mandateStatusVal,
+              connector_name: agentNameVal !== "Self / Direct" ? agentNameVal : null,
+              collateral_id: collateralIdVal
             }
           ] : []
         };
@@ -203,12 +228,12 @@ export default function DataImporter({ onImport, onReset, currentCount }: DataIm
           groupedCustomers[nameVal] = {
             name: nameVal,
             occupation: occupationVal,
-            address: addressVal,
-            regional_office: "GORAKHPUR RO",
-            back_office: "GORAKHPUR HO",
-            area_office: "GKP OFFICE",
-            agent_name: "Self / Direct",
-            agent_code: "AG-DIR",
+            address: areaOfficeVal || "Gorakhpur, Uttar Pradesh",
+            regional_office: regionalOfficeVal || "GORAKHPUR RO",
+            back_office: backOfficeVal || "GORAKHPUR HO",
+            area_office: areaOfficeVal || "GKP OFFICE",
+            agent_name: agentNameVal,
+            agent_code: agentCodeVal || "AG-DIR",
             loans: [loanObj],
             loan_count: 1,
             total_sanctioned: sanctionAmtVal,
